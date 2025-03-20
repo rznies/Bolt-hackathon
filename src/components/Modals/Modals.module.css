@@ -1,0 +1,134 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #000;
+  border: 1px solid #00FF00;
+  border-radius: 4px;
+  padding: 20px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  color: #00FF00;
+  font-family: 'Courier New', monospace;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #00FF00;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.modalBody {
+  line-height: 1.6;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-size: 1rem;
+}
+
+.formGroup input {
+  background: none;
+  border: 1px solid #00FF00;
+  color: #00FF00;
+  padding: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+}
+
+.inputError {
+  border-color: #ff0000;
+}
+
+.error {
+  color: #ff0000;
+  font-size: 0.875rem;
+}
+
+.submitButton {
+  background: none;
+  border: 1px solid #00FF00;
+  color: #00FF00;
+  padding: 8px 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submitButton:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+}
+
+.tweetsContainer,
+.faqContainer,
+.aboutContainer,
+.prizesContainer,
+.judgesContainer,
+.sponsorsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faqItem {
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+  padding-bottom: 16px;
+}
+
+.faqItem:last-child {
+  border-bottom: none;
+}
+
+.faqItem h3 {
+  margin-bottom: 8px;
+  color: #00FF00;
+}
+
+@media (max-width: 640px) {
+  .modalContent {
+    padding: 15px;
+  }
+  
+  .modalHeader h2 {
+    font-size: 1.2rem;
+  }
+} 

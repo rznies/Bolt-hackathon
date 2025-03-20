@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bolt.new Hackathon Terminal
 
-## Getting Started
+An interactive terminal interface for the World's Largest Hackathon by Bolt.new.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Interactive terminal interface with command history
+- Sound effects for typing and command execution
+- Modal windows for different sections (About, Register, Prizes, etc.)
+- Responsive design for all screen sizes
+- TypeScript support for better development experience
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Prerequisites
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Node.js 18.x or later
+- npm 9.x or later
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup
 
-## Learn More
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Add sound files to the public directory:
+   - Create a `sounds` directory in `public`
+   - Add `beep-01a.wav` and `beep-02.wav` to the `sounds` directory
 
-To learn more about Next.js, take a look at the following resources:
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Available Commands
 
-## Deploy on Vercel
+- `help` - Show available commands
+- `about` - Information about the hackathon
+- `register` - Register for the hackathon
+- `prizes` - View prize information
+- `judges` - View judges
+- `sponsors` - View sponsors
+- `participants` - View current participant count
+- `tweets` - View latest tweets
+- `faq` - Frequently asked questions
+- `surprise` - A surprise command
+- `clear` - Clear the terminal
+- `hack` - A fun number guessing game
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Built with Next.js 14 and TypeScript
+- Uses CSS Modules for styling
+- Follows accessibility best practices
+- Optimized for performance
+
+## License
+
+MIT
