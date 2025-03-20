@@ -3,11 +3,12 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
-  background-color: #000;
-  color: #00FF00;
   font-family: 'Courier New', monospace;
   position: relative;
   z-index: 2;
+  transition: all 0.3s ease;
+  background-color: var(--theme-bg, #000);
+  color: var(--theme-text, #00FF00);
 }
 
 .terminalOutput {
@@ -16,8 +17,38 @@
   overflow-y: auto;
   white-space: pre-wrap;
   line-height: 1.5;
-  text-shadow: 0 0 5px #00FF00;
+  text-shadow: 0 0 5px currentColor;
   animation: flicker 0.5s ease-in-out;
+}
+
+.suggestions {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.suggestion {
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.suggestion:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes commandSuccess {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.commandSuccess {
+  animation: commandSuccess 0.3s ease;
 }
 
 .inputLine {
@@ -31,11 +62,11 @@
 .commandInput {
   background: none;
   border: none;
-  color: #00FF00;
+  color: inherit;
   font-size: 16px;
   outline: none;
   width: 100%;
-  caret-color: #00FF00;
+  caret-color: var(--theme-text, #00FF00);
   font-family: 'Courier New', monospace;
 }
 
@@ -52,4 +83,4 @@
   .commandInput {
     font-size: 14px;
   }
-} 
+}

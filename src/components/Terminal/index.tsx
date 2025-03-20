@@ -10,6 +10,20 @@ interface TerminalProps {
   onToggle: () => void;
 }
 
+interface Theme {
+  background: string;
+  text: string;
+  accent: string;
+  name: string;
+}
+
+const themes: Theme[] = [
+  { name: 'Matrix', background: '#000', text: '#00FF00', accent: '#003300' },
+  { name: 'Cyberpunk', background: '#2b213a', text: '#ff79c6', accent: '#bd93f9' },
+  { name: 'Retro', background: '#2d2d2d', text: '#ff8833', accent: '#ffd700' },
+  { name: 'Ocean', background: '#002b36', text: '#839496', accent: '#268bd2' }
+];
+
 export default function Terminal({ onToggle }: TerminalProps) {
   const [output, setOutput] = useState('');
   const [input, setInput] = useState('');
@@ -17,6 +31,10 @@ export default function Terminal({ onToggle }: TerminalProps) {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [participantCount, setParticipantCount] = useState(12345);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [currentTheme, setCurrentTheme] = useState<Theme>(themes[0]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [gameState, setGameState] = useState<{number: number; attempts: number; hints: number} | null>(null);
   
   const terminalOutputRef = useRef<HTMLDivElement>(null);
   const commandInputRef = useRef<HTMLInputElement>(null);
@@ -92,6 +110,40 @@ export default function Terminal({ onToggle }: TerminalProps) {
     type();
   };
 
+  const cycleTheme = () => {
+    const currentIndex = themes.findIndex(t => t.name === currentTheme.name);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    const newTheme = themes[nextIndex];
+    setCurrentTheme(newTheme);
+    document.documentElement.style.setProperty('--theme-bg', newTheme.background);
+    document.documentElement.style.setProperty('--theme-text', newTheme.text);
+    document.documentElement.style.setProperty('--theme-accent', newTheme.accent);
+    typeResponse(`Switched to ${newTheme.name} theme\n`);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInput(value);
+    
+    if (value.length > 0) {
+      const matches = Object.keys(commandsList).filter(cmd =>
+        cmd.startsWith(value.toLowerCase())
+      );
+      setSuggestions(matches);
+      setShowSuggestions(matches.length > 0);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const applySuggestion = (suggestion: string) => {
+    setInput(suggestion);
+    setShowSuggestions(false);
+    if (commandInputRef.current) {
+      commandInputRef.current.focus();
+    }
+  };
+
   const typeResponse = (text: string) => {
     let i = 0;
     function type() {
@@ -105,8 +157,14 @@ export default function Terminal({ onToggle }: TerminalProps) {
   };
 
   const handleCommand = (cmd: string) => {
-    const trimmedCmd = cmd.trim().toLowerCase();
+    const trimmedCmd = cmd.trim();
     if (!trimmedCmd) return;
+    
+    // Play enter sound
+    if (enterSoundRef.current) {
+      enterSoundRef.current.currentTime = 0;
+      enterSoundRef.current.play().catch(console.error);
+    }
     
     // Add to command history
     setCommandHistory(prev => [...prev, trimmedCmd]);
@@ -115,8 +173,11 @@ export default function Terminal({ onToggle }: TerminalProps) {
     // Show command in terminal
     setOutput(prev => prev + `> ${trimmedCmd}\n`);
     
+    // Parse command and arguments
+    const [command, ...args] = trimmedCmd.toLowerCase().split(' ');
+    
     // Process commands
-    switch (trimmedCmd) {
+    switch (command) {
       case 'help':
         typeResponse(commandsList.help + '\n');
         break;
@@ -148,20 +209,105 @@ export default function Terminal({ onToggle }: TerminalProps) {
         break;
       case 'faq':
         setActiveModal('faq');
-        typeResponse(commandsList.faq + '\n');
         break;
+      case 'hack':
+        const difficulty = args[0] || 'normal';
+        const gameConfig = (() => {
+          switch(difficulty.toLowerCase()) {
+            case 'easy':
+              return { range: 50, hints: 5 };
+            case 'hard':
+              return { range: 200, hints: 2 };
+            default:
+              return { range: 100, hints: 3 };
+          }
+        })();
+        
+        const newTargetNumber = Math.floor(Math.random() * gameConfig.range) + 1;
+        setGameState({
+          number: newTargetNumber,
+          attempts: 0,
+          hints: gameConfig.hints
+        });
+        
+        typeResponse(`🎮 Number Guessing Game - ${difficulty.toUpperCase()} MODE\n\nGuess a number between 1-${gameConfig.range}\nYou have ${gameConfig.hints} hints available!\nType 'hint' for a clue\n\n`);
+        break;
+
+      case 'hint':
+        if (!gameState) {
+          typeResponse('No active game! Type "hack" to start a new game.\n');
+          break;
+        }
+        
+        if (gameState.hints <= 0) {
+          typeResponse('No hints left! Keep guessing!\n');
+          break;
+        }
+        
+        const target = gameState.number;
+        const hintMessages = [
+          `The number is ${target % 2 === 0 ? 'even' : 'odd'}`,
+          `The number is ${target > 50 ? 'greater' : 'less'} than 50`,
+          `The first digit is ${Math.floor(target / 10)}`,
+          `The sum of digits is ${target.toString().split('').reduce((a, b) => a + parseInt(b), 0)}`,
+          `It's a ${target.toString().length}-digit number`
+        ];
+        
+        const randomHint = hintMessages[Math.floor(Math.random() * hintMessages.length)];
+        setGameState(prev => prev ? { ...prev, hints: prev.hints - 1 } : null);
+        typeResponse(`🎯 Hint (${gameState.hints - 1} left):\n${randomHint}\n`);
+        break;
+      
+      case 'theme':
+        if (args.length === 0) {
+          cycleTheme();
+        } else {
+          const themeNumber = parseInt(args[0]);
+          if (!isNaN(themeNumber) && themeNumber >= 1 && themeNumber <= themes.length) {
+            setCurrentTheme(themes[themeNumber - 1]);
+            typeResponse(`Switched to ${themes[themeNumber - 1].name} theme\n`);
+          } else {
+            typeResponse('Invalid theme number. Type "theme" to see available themes.\n');
+          }
+        }
+        break;
+
       case 'surprise':
-        typeResponse(commandsList.surprise + '\n');
+        const surpriseThemes = [
+          'AI-powered Social Network',
+          'Blockchain Gaming Platform', 
+          'Climate Tech Solution',
+          'Web3 Education Platform',
+          'Healthcare AI Assistant',
+          'Decentralized Finance App'
+        ];
+        const randomTheme = surpriseThemes[Math.floor(Math.random() * surpriseThemes.length)];
+        typeResponse(`🎯 Your Hackathon Theme: ${randomTheme}\n\nGet coding! 🚀\n`);
         break;
+
       case 'clear':
         setOutput('');
         break;
-      case 'hack':
-        const secret = Math.floor(Math.random() * 10) + 1;
-        typeResponse(`Guess a number (1-10): ${secret} (Answer revealed for demo)\n`);
-        break;
+
       default:
-        typeResponse(`Command not found: ${trimmedCmd}. Type "help" for options.\n`);
+        if (gameState && /^\d+$/.test(command)) {
+          const guess = parseInt(command);
+          const target = gameState.number;
+          
+          setGameState(prev => prev ? { ...prev, attempts: prev.attempts + 1 } : null);
+          
+          if (guess === target) {
+            typeResponse(`🎉 Congratulations! You got it in ${gameState.attempts + 1} attempts!\n`);
+            setGameState(null);
+          } else {
+            const hint = guess > target ? 'Too high!' : 'Too low!';
+            typeResponse(`${hint} Try again...\n`);
+          }
+        } else {
+          typeResponse(`Command not found: ${trimmedCmd}. Type "help" for options.\n`);
+          typeResponse(commandsList.faq + '\n');
+        }
+        break;
     }
     
     setInput('');
@@ -210,7 +356,13 @@ export default function Terminal({ onToggle }: TerminalProps) {
 
   return (
     <>
-      <div className={styles.terminal}>
+      <div 
+      className={styles.terminal} 
+      data-theme={currentTheme.name}
+      style={{
+        backgroundColor: currentTheme.background,
+        color: currentTheme.text
+      }}>
         <div className={styles.terminalOutput} ref={terminalOutputRef}>
           {output}
         </div>
@@ -224,6 +376,10 @@ export default function Terminal({ onToggle }: TerminalProps) {
             ref={commandInputRef}
             aria-label="Enter terminal command"
             className={styles.commandInput}
+            style={{
+              color: currentTheme.text,
+              caretColor: currentTheme.text
+            }}
           />
         </div>
       </div>
@@ -243,4 +399,4 @@ export default function Terminal({ onToggle }: TerminalProps) {
       />
     </>
   );
-} 
+}
