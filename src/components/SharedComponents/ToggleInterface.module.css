@@ -1,0 +1,43 @@
+.toggleContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.toggleButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #00FF00;
+  color: #00FF00;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  transition: all 0.2s ease;
+}
+
+.toggleButton:hover {
+  background: rgba(0, 255, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.toggleIcon {
+  font-size: 1.2rem;
+}
+
+.toggleText {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .toggleText {
+    display: none;
+  }
+  
+  .toggleButton {
+    padding: 8px;
+  }
+}
