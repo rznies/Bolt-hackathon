@@ -3,6 +3,11 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
+  background-color: #000;
+  color: #00FF00;
+  font-family: 'Courier New', monospace;
+  position: relative;
+  z-index: 2;
 }
 
 .terminalOutput {
@@ -20,6 +25,7 @@
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
+  border-top: 1px solid rgba(0, 255, 0, 0.2);
 }
 
 .commandInput {

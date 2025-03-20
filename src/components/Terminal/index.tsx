@@ -4,8 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './Terminal.module.css';
 import { commandsList } from '@/utils/commands';
 import ModalManager from '@/components/Modals/ModalManager';
+import ToggleInterface from '@/components/SharedComponents/ToggleInterface';
 
-export default function Terminal() {
+interface TerminalProps {
+  onToggle: () => void;
+}
+
+export default function Terminal({ onToggle }: TerminalProps) {
   const [output, setOutput] = useState('');
   const [input, setInput] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -229,6 +234,12 @@ export default function Terminal() {
         onClose={() => setActiveModal(null)}
         participantCount={participantCount}
         onRegister={handleRegistration}
+      />
+      
+      {/* Toggle Interface */}
+      <ToggleInterface 
+        currentInterface="developer" 
+        onToggle={onToggle} 
       />
     </>
   );
